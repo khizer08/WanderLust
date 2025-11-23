@@ -49,7 +49,9 @@ module.exports.renderEditForm=async (req,res)=>{ //this module is used to render
         req.flash("error","your listing was deleted!");// key message pair.
         return res.redirect("/listings");
     }
-    res.render("listings/edit.ejs",{listing});
+    let originalImageUrl=listing.image.url;
+    originalImageUrl.replace("/upload","/upload/w_250");// we are fixing the pixels of the image that is being displayed in edit form.
+    res.render("listings/edit.ejs",{listing,originalImageUrl});
 };
 
 
