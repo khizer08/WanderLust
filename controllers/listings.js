@@ -30,9 +30,12 @@ module.exports.showListing=async (req,res)=>{ //this module is used to list the 
 
 
 module.exports.createListing=async (req,res)=>{ //this module is used to list the particular listing details in breif.
-    let {id}=req.params;
+    let url=req.file.path;
+    let filename=req.file.filename;
+
     const newListing=new Listing(req.body.listing); // understand "req.body.listing" [hint:- new.ejs form]
     newListing.owner=req.user._id;
+    newListing.image={url,filename};
     await newListing.save();
     req.flash("success","New  listing created!");// key message pair.
     res.redirect("/listings");
@@ -52,7 +55,15 @@ module.exports.renderEditForm=async (req,res)=>{ //this module is used to render
 
 module.exports.updateListing=async(req,res)=>{ //this module updates the changes made in edit form of that particular listing.
     let {id}=req.params;
-    await Listing.findByIdAndUpdate(id,{...req.body.listing});
+    let listing = await Listing.findByIdAndUpdate(id,{...req.body.listing});
+    
+    if(typeof req.file !=="undefined"){
+        let url=req.file.path;
+        let filename=req.file.filename;
+        listing.image={url,filename};
+        await listing.save();
+    }
+
     req.flash("success","listing updated!");// key message pair.
     res.redirect(`/listings/${id}`);
 };
